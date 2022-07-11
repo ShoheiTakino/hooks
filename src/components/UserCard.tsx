@@ -1,5 +1,5 @@
 import { VFC } from "react";
-import { UserProfile } from "./types/UserProfile";
+import { UserProfile } from "./types/userProfile";
 
 type Props = {
   user: UserProfile;
