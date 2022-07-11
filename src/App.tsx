@@ -5,17 +5,16 @@ import { User } from "./types/api/user";
 import { useState } from "react";
 import { UserProfile } from "./types/userProfile";
 
-const user = {
-  id: 1,
-  name: "shohi",
-  email: "123@123",
-  address: "address"
-};
-
 export default function App() {
   const [userProfiles, setUserProfiles] = useState<Array<UserProfile>>([]);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
   const onClickFetchUser = () => {
+    setLoading(true);
+    setError(false);
+
     axios
       .get<Array<User>>("https://jsonplaceholder.typicode.com/users")
       .then((result) => {
@@ -26,16 +25,30 @@ export default function App() {
           address: `${user.address.city}${user.address.suite}${user.address.street}`
         }));
         setUserProfiles(data);
+      })
+      .catch(() => {
+        setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
     <div className="App">
       <button onClick={onClickFetchUser}>データ取得</button>
-      {userProfiles.map((user) => (
-        <UserCard key={user.id} user={user} />
-      ))}
-      <UserCard user={user} />
+      <br />
+      {error ? (
+        <p style={{ color: "red" }}>データ取得に失敗しました</p>
+      ) : loading ? (
+        <p>loading...</p>
+      ) : (
+        <>
+          {userProfiles.map((user) => (
+            <UserCard key={user.id} user={user} />
+          ))}
+        </>
+      )}
     </div>
   );
 }
